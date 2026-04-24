@@ -12,9 +12,9 @@
     .bottom-nav a { color: #0d1e4c; background: #ffc72c; text-decoration: none; font-weight: bold; padding: 12px 28px; border-radius: 6px; font-size: 16px; letter-spacing: 1px; transition: transform 0.1s, box-shadow 0.1s; }
     .bottom-nav a:hover { background: #ffd757; box-shadow: 0 0 14px rgba(255,199,44,0.7); transform: translateY(-2px); }
     .teams { display: grid; gap: 16px; max-width: 1200px; margin: 0 auto; padding: 0 24px 24px; }
-    .row { background: linear-gradient(180deg, #152a6a 0%, #0a1530 100%); border-radius: 10px; padding: 18px 22px; display: grid; grid-template-columns: 1fr 120px auto; gap: 20px; align-items: center; border-left: 8px solid var(--team-color); box-shadow: 0 4px 14px rgba(0,0,0,0.5); }
-    .team-name { font-size: 28px; font-weight: bold; color: var(--team-color); letter-spacing: 2px; }
-    .score-display { font-family: 'Stencil', 'Impact', sans-serif; font-size: 56px; text-align: center; color: white; text-shadow: 0 0 14px var(--team-color); }
+    .row { background: linear-gradient(180deg, var(--team-color) 0%, color-mix(in srgb, var(--team-color), black 55%) 100%); border-radius: 10px; padding: 18px 22px; display: grid; grid-template-columns: 1fr 120px auto; gap: 20px; align-items: center; border-left: 8px solid color-mix(in srgb, var(--team-color), black 30%); box-shadow: 0 4px 14px rgba(0,0,0,0.5); }
+    .team-name { font-size: 28px; font-weight: bold; color: var(--text-color); letter-spacing: 2px; text-shadow: 1px 1px 3px rgba(0,0,0,0.4); }
+    .score-display { font-family: 'Stencil', 'Impact', sans-serif; font-size: 56px; text-align: center; color: var(--text-color); text-shadow: 2px 2px 6px rgba(0,0,0,0.5); }
     .buttons { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
     .btn { padding: 14px 20px; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; min-width: 64px; transition: transform 0.1s, box-shadow 0.1s; }
     .btn:active { transform: scale(0.95); }
@@ -61,6 +61,15 @@
 
     function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
 
+    function textColorFor(hex) {
+      const h = String(hex || '#888888').replace('#', '');
+      const r = parseInt(h.substring(0, 2), 16);
+      const g = parseInt(h.substring(2, 4), 16);
+      const b = parseInt(h.substring(4, 6), 16);
+      const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+      return luminance > 160 ? '#0d1e4c' : '#ffffff';
+    }
+
     function render() {
       const container = document.getElementById('teams');
       if (!teams.length) {
@@ -68,7 +77,7 @@
         return;
       }
       container.innerHTML = teams.map((t, i) => `
-        <div class="row" style="--team-color:${t.color}">
+        <div class="row" style="--team-color:${t.color};--text-color:${textColorFor(t.color)}">
           <div class="team-name">${escapeHtml(t.name)}</div>
           <div class="score-display" id="score-${i}">${escapeHtml(t.score)}</div>
           <div class="buttons">

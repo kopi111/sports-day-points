@@ -17,11 +17,10 @@
     .live.off { color: #c8102e; }
     @keyframes pulse { 0%, 100% { opacity: 1; transform: translateX(-240px) scale(1); } 50% { opacity: 0.6; transform: translateX(-240px) scale(1.2); } }
     main { display: grid; gap: 16px; padding: 24px; height: calc(100vh - 200px); box-sizing: border-box; }
-    .card { position: relative; container-type: size; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1); min-height: 0; min-width: 0; overflow: hidden; border: 2px solid rgba(255,255,255,0.08); background: linear-gradient(180deg, #152a6a 0%, #0a1530 100%); }
-    .card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, var(--team-color) 0%, transparent 60%); opacity: 0.22; pointer-events: none; }
-    .card::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, var(--team-color) 0%, transparent 40%); opacity: 0.12; pointer-events: none; }
-    .card .name { position: relative; font-size: clamp(16px, 12cqh, 48px); font-weight: bold; margin-bottom: 6cqh; letter-spacing: 2px; text-align: center; line-height: 1.1; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
-    .card .score { position: relative; font-family: 'Stencil', 'Impact', sans-serif; font-size: clamp(40px, 50cqh, 220px); color: white; line-height: 1; text-shadow: 4px 4px 8px rgba(0,0,0,0.9), 0 0 20px var(--team-color); }
+    .card { position: relative; container-type: size; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2); min-height: 0; min-width: 0; overflow: hidden; border: 2px solid rgba(255,255,255,0.15); background: linear-gradient(180deg, var(--team-color) 0%, color-mix(in srgb, var(--team-color), black 55%) 100%); }
+    .card::after { content: ''; position: absolute; top: -40%; left: -40%; width: 180%; height: 180%; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 50%); pointer-events: none; }
+    .card .name { position: relative; font-size: clamp(16px, 12cqh, 48px); font-weight: bold; margin-bottom: 6cqh; letter-spacing: 2px; text-align: center; line-height: 1.1; color: var(--text-color); text-shadow: 2px 2px 4px rgba(0,0,0,0.4); }
+    .card .score { position: relative; font-family: 'Stencil', 'Impact', sans-serif; font-size: clamp(40px, 50cqh, 220px); color: var(--text-color); line-height: 1; text-shadow: 4px 4px 8px rgba(0,0,0,0.5); }
     .medal { position: absolute; top: 8px; left: 12px; font-size: clamp(24px, 18cqh, 60px); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); z-index: 2; }
     .rank-1 { border-color: #FFD700; box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 40px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2); }
     .rank-2 { border-color: #C0C0C0; box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 30px rgba(192,192,192,0.3); }
@@ -69,6 +68,15 @@
       board.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
     }
 
+    function textColorFor(hex) {
+      const h = String(hex || '#888888').replace('#', '');
+      const r = parseInt(h.substring(0, 2), 16);
+      const g = parseInt(h.substring(2, 4), 16);
+      const b = parseInt(h.substring(4, 6), 16);
+      const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+      return luminance > 160 ? '#0d1e4c' : '#ffffff';
+    }
+
     function rankTeams(teams) {
       const sorted = teams
         .map((t, i) => ({ i, score: parseFloat(t.score) || 0 }))
@@ -96,10 +104,11 @@
         const rank = ranked.get(i);
         const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
         const rankClass = rank && rank <= 3 ? ` rank-${rank}` : '';
+        const textColor = textColorFor(t.color);
         return `
-          <div class="card${rankClass}" style="--team-color:${t.color}">
+          <div class="card${rankClass}" style="--team-color:${t.color};--text-color:${textColor}">
             ${medal ? `<span class="medal">${medal}</span>` : ''}
-            <div class="name" style="color:${t.color}">${t.name}</div>
+            <div class="name">${t.name}</div>
             <div class="score">${t.score}</div>
           </div>
         `;
