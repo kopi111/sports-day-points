@@ -103,6 +103,8 @@
     <a href="points9098w8w88w-.html">⚡ Quick Points</a>
   </nav>
 
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
   <script src="storage.js"></script>
   <script>
     let teams = [];
@@ -235,10 +237,9 @@
       return /[,"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
     }
 
+    window.addEventListener('datachanged', () => { load(); loadHistory(); });
     load();
     loadHistory();
-    window.addEventListener('storage', () => { load(); loadHistory(); });
-    setInterval(loadHistory, 3000);
   </script>
 </body>
 </html>

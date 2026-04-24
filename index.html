@@ -52,6 +52,8 @@
   </header>
   <main id="board"></main>
 
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
   <script src="storage.js"></script>
   <script>
     function layout(n) {
@@ -104,9 +106,8 @@
       }).join('');
     }
 
+    window.addEventListener('datachanged', refresh);
     refresh();
-    window.addEventListener('storage', refresh);
-    setInterval(refresh, 2000);
   </script>
 </body>
 </html>

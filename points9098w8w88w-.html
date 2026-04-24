@@ -53,6 +53,8 @@
     <a href="admin9098w8w88w-.html">⚙ Admin</a>
   </nav>
 
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
   <script src="storage.js"></script>
   <script>
     let teams = [];
@@ -124,9 +126,8 @@
       render();
     }
 
+    window.addEventListener('datachanged', load);
     load();
-    window.addEventListener('storage', load);
-    setInterval(load, 2000);
   </script>
 </body>
 </html>
