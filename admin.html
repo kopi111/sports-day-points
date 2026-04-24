@@ -5,10 +5,12 @@
   <title>Scoreboard Admin</title>
   <style>
     body { font-family: 'Segoe UI', sans-serif; background: #eef2f8; margin: 0; padding: 0; }
-    .jcf-bar { background: linear-gradient(180deg, #0d1e4c 0%, #152a6a 100%); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #ffc72c; margin-bottom: 28px; }
+    .jcf-bar { background: linear-gradient(180deg, #0d1e4c 0%, #152a6a 100%); padding: 16px 24px; display: flex; justify-content: flex-start; align-items: center; border-bottom: 3px solid #ffc72c; margin-bottom: 28px; }
     .jcf-bar h1 { margin: 0; font-size: 26px; color: #ffc72c; font-family: Georgia, serif; letter-spacing: 2px; }
     .jcf-bar .brand { display: flex; align-items: center; gap: 14px; }
-    .jcf-bar .nav a { color: #0d1e4c; background: #ffc72c; text-decoration: none; font-weight: bold; padding: 8px 14px; border-radius: 4px; margin-left: 8px; font-size: 14px; }
+    .bottom-nav { display: flex; justify-content: center; gap: 12px; padding: 32px 24px; margin-top: 40px; border-top: 2px solid rgba(13,30,76,0.15); background: #eef2f8; }
+    .bottom-nav a { color: #ffc72c; background: #0d1e4c; text-decoration: none; font-weight: bold; padding: 12px 28px; border-radius: 6px; font-size: 16px; letter-spacing: 1px; transition: transform 0.1s, box-shadow 0.1s; }
+    .bottom-nav a:hover { background: #152a6a; box-shadow: 0 4px 14px rgba(13,30,76,0.4); transform: translateY(-2px); }
     .page { padding: 0 40px 40px; }
     a { color: #0d1e4c; text-decoration: none; font-weight: bold; }
     table { width: 100%; max-width: 900px; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
@@ -47,10 +49,6 @@
         <text x="40" y="48" text-anchor="middle" fill="#ffc72c" font-family="Georgia, serif" font-weight="bold" font-size="22">JCF</text>
       </svg>
       <h1>Scoreboard Admin</h1>
-    </div>
-    <div class="nav">
-      <a href="index.html">Scoreboard</a>
-      <a href="points.html">Quick Points</a>
     </div>
   </div>
 
@@ -100,6 +98,10 @@
     </div>
 
   </div>
+
+  <nav class="bottom-nav">
+    <a href="points.html">⚡ Quick Points</a>
+  </nav>
 
   <script src="storage.js"></script>
   <script>

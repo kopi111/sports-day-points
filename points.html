@@ -5,10 +5,12 @@
   <title>Quick Points</title>
   <style>
     body { font-family: 'Segoe UI', sans-serif; background: radial-gradient(ellipse at top, #12275c 0%, #050a1c 70%); color: white; margin: 0; padding: 0; min-height: 100vh; box-sizing: border-box; }
-    .jcf-bar { background: linear-gradient(180deg, #0d1e4c 0%, #152a6a 100%); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #ffc72c; margin-bottom: 24px; }
+    .jcf-bar { background: linear-gradient(180deg, #0d1e4c 0%, #152a6a 100%); padding: 16px 24px; display: flex; justify-content: flex-start; align-items: center; border-bottom: 3px solid #ffc72c; margin-bottom: 24px; }
     .jcf-bar h1 { margin: 0; font-size: 26px; color: #ffc72c; font-family: Georgia, serif; letter-spacing: 2px; }
     .jcf-bar .brand { display: flex; align-items: center; gap: 14px; }
-    .nav a { color: #0d1e4c; background: #ffc72c; text-decoration: none; font-weight: bold; padding: 8px 14px; border-radius: 4px; margin-left: 8px; font-size: 14px; }
+    .bottom-nav { display: flex; justify-content: center; gap: 12px; padding: 24px; margin-top: 20px; border-top: 2px solid rgba(255,199,44,0.3); }
+    .bottom-nav a { color: #0d1e4c; background: #ffc72c; text-decoration: none; font-weight: bold; padding: 12px 28px; border-radius: 6px; font-size: 16px; letter-spacing: 1px; transition: transform 0.1s, box-shadow 0.1s; }
+    .bottom-nav a:hover { background: #ffd757; box-shadow: 0 0 14px rgba(255,199,44,0.7); transform: translateY(-2px); }
     .teams { display: grid; gap: 16px; max-width: 1200px; margin: 0 auto; padding: 0 24px 24px; }
     .row { background: linear-gradient(180deg, #152a6a 0%, #0a1530 100%); border-radius: 10px; padding: 18px 22px; display: grid; grid-template-columns: 1fr 120px auto; gap: 20px; align-items: center; border-left: 8px solid var(--team-color); box-shadow: 0 4px 14px rgba(0,0,0,0.5); }
     .team-name { font-size: 28px; font-weight: bold; color: var(--team-color); letter-spacing: 2px; }
@@ -43,13 +45,13 @@
       </svg>
       <h1>⚡ Quick Points</h1>
     </div>
-    <div class="nav">
-      <a href="index.html">Scoreboard</a>
-      <a href="admin.html">Admin</a>
-    </div>
   </div>
 
   <div id="teams" class="teams"></div>
+
+  <nav class="bottom-nav">
+    <a href="admin.html">⚙ Admin</a>
+  </nav>
 
   <script src="storage.js"></script>
   <script>
