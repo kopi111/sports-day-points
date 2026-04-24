@@ -100,11 +100,13 @@
   </div>
 
   <nav class="bottom-nav">
-    <a href="points.html">⚡ Quick Points</a>
+    <a href="points-j5n8z4q6.html">⚡ Quick Points</a>
   </nav>
 
   <script src="storage.js"></script>
   <script>
+    requireAuth().then(ok => { if (ok) boot(); });
+
     let teams = [];
 
     function escapeAttr(s) { return String(s).replace(/"/g, '&quot;'); }
@@ -235,10 +237,12 @@
       return /[,"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
     }
 
-    load();
-    loadHistory();
-    window.addEventListener('storage', () => { load(); loadHistory(); });
-    setInterval(loadHistory, 3000);
+    function boot() {
+      load();
+      loadHistory();
+      window.addEventListener('storage', () => { load(); loadHistory(); });
+      setInterval(loadHistory, 3000);
+    }
   </script>
 </body>
 </html>

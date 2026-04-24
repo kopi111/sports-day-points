@@ -1,5 +1,34 @@
 const STORAGE_KEY = 'sportsDayData';
 
+// Change this by hashing a new passphrase. In your browser console:
+//   crypto.subtle.digest('SHA-256', new TextEncoder().encode('your-new-pass'))
+//     .then(b => console.log(Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2,'0')).join('')));
+const PASSPHRASE_HASH = 'eeaa8e0ea19be83d04908ab9ee819b8bdd3a17ce2ce9a1456b3158a433451dc0';
+const AUTH_SESSION_KEY = 'sportsDayAuth';
+
+async function sha256Hex(text) {
+  const bytes = new TextEncoder().encode(text);
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function requireAuth() {
+  if (sessionStorage.getItem(AUTH_SESSION_KEY) === PASSPHRASE_HASH) return true;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const entered = prompt('Enter passphrase:');
+    if (entered === null) { window.location.href = 'index.html'; return false; }
+    const hash = await sha256Hex(entered);
+    if (hash === PASSPHRASE_HASH) {
+      sessionStorage.setItem(AUTH_SESSION_KEY, hash);
+      return true;
+    }
+    alert('Wrong passphrase.');
+  }
+  window.location.href = 'index.html';
+  return false;
+}
+
+
 const DEFAULT_DATA = {
   title: 'Area 7',
   subtitle: 'Sport Day',
