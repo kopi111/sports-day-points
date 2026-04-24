@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Scoreboard Admin</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #eef2f8; margin: 0; padding: 0; }
+    .jcf-bar { background: linear-gradient(180deg, #0d1e4c 0%, #152a6a 100%); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #ffc72c; margin-bottom: 28px; }
+    .jcf-bar h1 { margin: 0; font-size: 26px; color: #ffc72c; font-family: Georgia, serif; letter-spacing: 2px; }
+    .jcf-bar .brand { display: flex; align-items: center; gap: 14px; }
+    .jcf-bar .nav a { color: #0d1e4c; background: #ffc72c; text-decoration: none; font-weight: bold; padding: 8px 14px; border-radius: 4px; margin-left: 8px; font-size: 14px; }
+    .page { padding: 0 40px 40px; }
+    a { color: #0d1e4c; text-decoration: none; font-weight: bold; }
+    table { width: 100%; max-width: 900px; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+    th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #e0e5ee; vertical-align: middle; }
+    td:nth-child(2) { width: 140px; }
+    td:nth-child(3) { width: 80px; text-align: center; }
+    td:nth-child(4) { width: 120px; text-align: right; }
+    th { background: #0d1e4c; color: #ffc72c; font-weight: 600; letter-spacing: 1px; font-family: Georgia, serif; }
+    input[type=text] { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; width: 100%; box-sizing: border-box; }
+    input[type=color] { width: 60px; height: 36px; border: none; cursor: pointer; }
+    button { padding: 10px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 15px; }
+    .btn-primary { background: #0d1e4c; color: #ffc72c; }
+    .btn-danger { background: #c8102e; color: white; padding: 6px 12px; }
+    .btn-add { background: #009b3a; color: white; margin-top: 15px; }
+    .history { margin-top: 40px; max-width: 1100px; }
+    .history h2 { color: #0d1e4c; font-family: Georgia, serif; letter-spacing: 1px; margin: 0 0 14px; }
+    .history .sub { color: #555; margin: 0 0 14px; font-size: 14px; }
+    .history table { width: 100%; max-width: 1100px; }
+    .history td, .history th { font-size: 14px; padding: 10px 14px; }
+    .history td.ts { color: #555; white-space: nowrap; }
+    .history td.delta-plus { color: #009b3a; font-weight: bold; }
+    .history td.delta-minus { color: #c8102e; font-weight: bold; }
+    .history td.team { font-weight: bold; color: #0d1e4c; }
+    .history td.src { color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+    .history .empty-row { text-align: center; padding: 20px; color: #999; }
+    .history-toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; }
+    .actions { display: flex; gap: 10px; margin-top: 20px; align-items: center; }
+    .status { margin-left: 15px; color: forestgreen; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="jcf-bar">
+    <div class="brand">
+      <svg width="44" height="50" viewBox="0 0 80 90">
+        <path d="M40 2 L76 12 L76 48 Q76 72 40 86 Q4 72 4 48 L4 12 Z" fill="#152a6a" stroke="#ffc72c" stroke-width="3"/>
+        <text x="40" y="48" text-anchor="middle" fill="#ffc72c" font-family="Georgia, serif" font-weight="bold" font-size="22">JCF</text>
+      </svg>
+      <h1>Scoreboard Admin</h1>
+    </div>
+    <div class="nav">
+      <a href="index.html">Scoreboard</a>
+      <a href="points.html">Quick Points</a>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <div style="background:white;padding:20px;border-radius:8px;max-width:900px;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,0.1);border-top:4px solid #ffc72c;">
+      <div style="display:flex;gap:20px;">
+        <label style="flex:1;">
+          <div style="font-weight:600;margin-bottom:6px;">Event Title</div>
+          <input type="text" id="title" />
+        </label>
+        <label style="flex:1;">
+          <div style="font-weight:600;margin-bottom:6px;">Subtitle</div>
+          <input type="text" id="subtitle" />
+        </label>
+      </div>
+      <label style="display:block;margin-top:14px;font-weight:600;">
+        <input type="checkbox" id="live" style="margin-right:8px;" /> Live indicator ON
+      </label>
+    </div>
+
+    <table>
+      <thead><tr><th>Team Name</th><th>Score</th><th>Color</th><th></th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+
+    <button class="btn-add" onclick="addRow()">+ Add Team</button>
+
+    <div class="actions">
+      <button class="btn-primary" onclick="save()">Save Changes</button>
+      <button class="btn-danger" onclick="resetAll()">Reset to Defaults</button>
+      <span id="status" class="status"></span>
+    </div>
+
+    <div class="history">
+      <h2>📋 Score Change Log</h2>
+      <p class="sub">Every score change is recorded here with timestamp for dispute resolution. Append-only.</p>
+      <div class="history-toolbar">
+        <button onclick="loadHistory()" style="background:#0d1e4c;color:#ffc72c;">↻ Refresh</button>
+        <button onclick="exportCsv()" style="background:#009b3a;color:white;">⬇ Export CSV</button>
+        <button onclick="clearHistory()" style="background:#c8102e;color:white;">Clear Log</button>
+      </div>
+      <table>
+        <thead><tr><th>Time</th><th>Team</th><th>Old → New</th><th>Delta</th><th>Source</th></tr></thead>
+        <tbody id="history-rows"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script src="storage.js"></script>
+  <script>
+    let teams = [];
+
+    function escapeAttr(s) { return String(s).replace(/"/g, '&quot;'); }
+    function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
+    function render() {
+      const rows = document.getElementById('rows');
+      rows.innerHTML = teams.map((t, i) => `
+        <tr>
+          <td><input type="text" value="${escapeAttr(t.name)}" oninput="teams[${i}].name=this.value" /></td>
+          <td><input type="text" value="${escapeAttr(t.score)}" oninput="teams[${i}].score=this.value" style="width:120px" /></td>
+          <td><input type="color" value="${t.color}" oninput="teams[${i}].color=this.value" /></td>
+          <td><button class="btn-danger" onclick="removeRow(${i})">Remove</button></td>
+        </tr>
+      `).join('');
+    }
+
+    function addRow() {
+      teams.push({ name: 'NEW TEAM', score: '0', color: '#888888' });
+      render();
+    }
+
+    function removeRow(i) {
+      teams.splice(i, 1);
+      render();
+    }
+
+    function save() {
+      const prev = loadData();
+      const data = {
+        ...prev,
+        title: document.getElementById('title').value,
+        subtitle: document.getElementById('subtitle').value,
+        live: document.getElementById('live').checked,
+        teams: teams
+      };
+
+      teams.forEach(t => {
+        const before = prev.teams.find(p => p.name === t.name);
+        if (before && before.score !== t.score) {
+          recordHistory(data, t.name, before.score, t.score, 'admin');
+        }
+      });
+
+      saveData(data);
+      showStatus('✓ Saved', 'forestgreen');
+      loadHistory();
+    }
+
+    function resetAll() {
+      if (!confirm('Reset title, teams, and scores to defaults? (History is kept.)')) return;
+      const data = loadData();
+      const defaults = structuredClone(DEFAULT_DATA);
+      defaults.history = data.history;
+      saveData(defaults);
+      load();
+      showStatus('✓ Reset', 'forestgreen');
+    }
+
+    function showStatus(text, color) {
+      const status = document.getElementById('status');
+      status.textContent = text;
+      status.style.color = color;
+      setTimeout(() => status.textContent = '', 3000);
+    }
+
+    function load() {
+      const data = loadData();
+      document.getElementById('title').value = data.title;
+      document.getElementById('subtitle').value = data.subtitle;
+      document.getElementById('live').checked = !!data.live;
+      teams = structuredClone(data.teams);
+      render();
+    }
+
+    let historyCache = [];
+
+    function loadHistory() {
+      historyCache = loadData().history || [];
+      const rows = document.getElementById('history-rows');
+      if (!historyCache.length) {
+        rows.innerHTML = '<tr><td colspan="5" class="empty-row">No changes recorded yet.</td></tr>';
+        return;
+      }
+      rows.innerHTML = historyCache.map(e => {
+        const deltaClass = e.delta > 0 ? 'delta-plus' : e.delta < 0 ? 'delta-minus' : '';
+        const deltaSign = e.delta > 0 ? '+' : '';
+        return `
+          <tr>
+            <td class="ts">${new Date(e.timestamp).toLocaleString()}</td>
+            <td class="team">${escapeHtml(e.teamName)}</td>
+            <td>${escapeHtml(e.oldScore || '—')} → ${escapeHtml(e.newScore)}</td>
+            <td class="${deltaClass}">${deltaSign}${e.delta}</td>
+            <td class="src">${escapeHtml(e.source)}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function clearHistory() {
+      if (!confirm('Clear the entire history log? This cannot be undone.')) return;
+      const data = loadData();
+      data.history = [];
+      saveData(data);
+      loadHistory();
+    }
+
+    function exportCsv() {
+      if (!historyCache.length) return;
+      const header = 'Timestamp,Team,OldScore,NewScore,Delta,Source';
+      const rows = historyCache.map(e => [
+        new Date(e.timestamp).toISOString(),
+        csvField(e.teamName),
+        csvField(e.oldScore),
+        csvField(e.newScore),
+        e.delta,
+        csvField(e.source),
+      ].join(','));
+      const blob = new Blob([header + '\n' + rows.join('\n')], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `scoreboard-history-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+    }
+
+    function csvField(v) {
+      const s = String(v ?? '');
+      return /[,"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    }
+
+    load();
+    loadHistory();
+    window.addEventListener('storage', () => { load(); loadHistory(); });
+    setInterval(loadHistory, 3000);
+  </script>
+</body>
+</html>

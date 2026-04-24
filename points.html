@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Quick Points</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: radial-gradient(ellipse at top, #12275c 0%, #050a1c 70%); color: white; margin: 0; padding: 0; min-height: 100vh; box-sizing: border-box; }
+    .jcf-bar { background: linear-gradient(180deg, #0d1e4c 0%, #152a6a 100%); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #ffc72c; margin-bottom: 24px; }
+    .jcf-bar h1 { margin: 0; font-size: 26px; color: #ffc72c; font-family: Georgia, serif; letter-spacing: 2px; }
+    .jcf-bar .brand { display: flex; align-items: center; gap: 14px; }
+    .nav a { color: #0d1e4c; background: #ffc72c; text-decoration: none; font-weight: bold; padding: 8px 14px; border-radius: 4px; margin-left: 8px; font-size: 14px; }
+    .teams { display: grid; gap: 16px; max-width: 1200px; margin: 0 auto; padding: 0 24px 24px; }
+    .row { background: linear-gradient(180deg, #152a6a 0%, #0a1530 100%); border-radius: 10px; padding: 18px 22px; display: grid; grid-template-columns: 1fr 120px auto; gap: 20px; align-items: center; border-left: 8px solid var(--team-color); box-shadow: 0 4px 14px rgba(0,0,0,0.5); }
+    .team-name { font-size: 28px; font-weight: bold; color: var(--team-color); letter-spacing: 2px; }
+    .score-display { font-family: 'Stencil', 'Impact', sans-serif; font-size: 56px; text-align: center; color: white; text-shadow: 0 0 14px var(--team-color); }
+    .buttons { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .btn { padding: 14px 20px; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; min-width: 64px; transition: transform 0.1s, box-shadow 0.1s; }
+    .btn:active { transform: scale(0.95); }
+    .btn-plus { background: #ffc72c; color: #0d1e4c; }
+    .btn-plus:hover { background: #ffd757; box-shadow: 0 0 14px rgba(255,199,44,0.7); }
+    .btn-minus { background: #c8102e; color: white; }
+    .btn-minus:hover { background: #e12845; box-shadow: 0 0 14px rgba(200,16,46,0.7); }
+    .btn-big { font-size: 22px; padding: 16px 24px; }
+    .custom-entry { display: flex; gap: 6px; align-items: center; margin-left: 8px; padding-left: 12px; border-left: 1px solid rgba(255,255,255,0.15); }
+    .custom-entry input { width: 100px; padding: 14px 10px; border: 2px solid #ffc72c; border-radius: 10px; background: rgba(255,255,255,0.1); color: white; font-size: 22px; font-weight: bold; text-align: center; box-sizing: border-box; -moz-appearance: textfield; appearance: textfield; }
+    .custom-entry input::-webkit-outer-spin-button,
+    .custom-entry input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .custom-entry input:focus { outline: none; border-color: #ffd757; background: rgba(255,255,255,0.2); }
+    .empty { text-align: center; padding: 40px; color: #888; }
+    @media (max-width: 700px) {
+      .row { grid-template-columns: 1fr; }
+      .buttons { justify-content: center; }
+      .score-display { font-size: 72px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="jcf-bar">
+    <div class="brand">
+      <svg width="44" height="50" viewBox="0 0 80 90">
+        <path d="M40 2 L76 12 L76 48 Q76 72 40 86 Q4 72 4 48 L4 12 Z" fill="#152a6a" stroke="#ffc72c" stroke-width="3"/>
+        <text x="40" y="48" text-anchor="middle" fill="#ffc72c" font-family="Georgia, serif" font-weight="bold" font-size="22">JCF</text>
+      </svg>
+      <h1>⚡ Quick Points</h1>
+    </div>
+    <div class="nav">
+      <a href="index.html">Scoreboard</a>
+      <a href="admin.html">Admin</a>
+    </div>
+  </div>
+
+  <div id="teams" class="teams"></div>
+
+  <script src="storage.js"></script>
+  <script>
+    let teams = [];
+
+    function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
+    function render() {
+      const container = document.getElementById('teams');
+      if (!teams.length) {
+        container.innerHTML = '<div class="empty">No teams yet. Go to <a href="admin.html" style="color:#8bb8ff;">Admin</a> to add some.</div>';
+        return;
+      }
+      container.innerHTML = teams.map((t, i) => `
+        <div class="row" style="--team-color:${t.color}">
+          <div class="team-name">${escapeHtml(t.name)}</div>
+          <div class="score-display" id="score-${i}">${escapeHtml(t.score)}</div>
+          <div class="buttons">
+            <button class="btn btn-minus" onclick="adjust(${i}, -1)">−1</button>
+            <button class="btn btn-plus" onclick="adjust(${i}, 1)">+1</button>
+            <button class="btn btn-plus btn-big" onclick="adjust(${i}, 2)">+2</button>
+            <button class="btn btn-plus btn-big" onclick="adjust(${i}, 3)">+3</button>
+            <button class="btn btn-plus btn-big" onclick="adjust(${i}, 5)">+5</button>
+            <div class="custom-entry">
+              <input type="number" id="entry-${i}" placeholder="±N" onkeydown="if(event.key==='Enter')addCustom(${i})" title="Type a number, press Enter or click Add" />
+              <button class="btn btn-plus btn-big" onclick="addCustom(${i})">Add</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function adjust(index, delta) {
+      adjustScore(index, delta, 'quick');
+      load();
+    }
+
+    function addCustom(index) {
+      const input = document.getElementById(`entry-${index}`);
+      const n = parseInt(input.value, 10);
+      if (!Number.isFinite(n) || n === 0) return;
+      adjust(index, n);
+      input.value = '';
+    }
+
+    function sameShape(a, b) {
+      if (a.length !== b.length) return false;
+      for (let i = 0; i < a.length; i++) {
+        if (a[i].name !== b[i].name || a[i].color !== b[i].color) return false;
+      }
+      return true;
+    }
+
+    function updateScoresOnly(next) {
+      next.forEach((t, i) => {
+        const el = document.getElementById(`score-${i}`);
+        if (el) el.textContent = t.score;
+      });
+    }
+
+    function load() {
+      const data = loadData();
+      const next = data.teams;
+      if (teams.length && sameShape(teams, next)) {
+        updateScoresOnly(next);
+        teams = next;
+        return;
+      }
+      teams = next;
+      render();
+    }
+
+    load();
+    window.addEventListener('storage', load);
+    setInterval(load, 2000);
+  </script>
+</body>
+</html>
