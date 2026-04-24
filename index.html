@@ -12,10 +12,6 @@
     .motto { font-size: 14px; color: #ffc72c; letter-spacing: 6px; margin-top: 6px; font-weight: 600; opacity: 0.85; }
     .crest { position: absolute; top: 18px; left: 30px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6)); }
     .trophy { position: absolute; top: 24px; right: 160px; font-size: 46px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
-    .live { position: absolute; top: 95px; left: 50%; transform: translateX(-240px); font-size: 32px; transition: color 0.3s; }
-    .live.on { color: #3dd068; animation: pulse 1.5s ease-in-out infinite; }
-    .live.off { color: #c8102e; }
-    @keyframes pulse { 0%, 100% { opacity: 1; transform: translateX(-240px) scale(1); } 50% { opacity: 0.6; transform: translateX(-240px) scale(1.2); } }
     main { display: grid; gap: 16px; padding: 24px; height: calc(100vh - 200px); box-sizing: border-box; }
     .card { position: relative; container-type: size; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2); min-height: 0; min-width: 0; overflow: hidden; border: 2px solid rgba(255,255,255,0.15); background: linear-gradient(180deg, var(--team-color) 0%, color-mix(in srgb, var(--team-color), black 55%) 100%); }
     .card::after { content: ''; position: absolute; top: -40%; left: -40%; width: 180%; height: 180%; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 50%); pointer-events: none; }
@@ -44,10 +40,9 @@
       <text x="40" y="76" text-anchor="middle" fill="white" font-family="Georgia, serif" font-size="7" letter-spacing="0.5">REASSURE</text>
     </svg>
     <span class="trophy">🏆</span>
-    <span id="live" class="live off">⚫</span>
     <h1 class="title" id="title"></h1>
     <h2 class="subtitle" id="subtitle"></h2>
-    <div class="motto">• SERVE • PROTECT • REASSURE •</div>
+    <div class="motto">THE ALTIMATE SHOW DOWN</div>
   </header>
   <main id="board"></main>
 
@@ -94,7 +89,6 @@
 
     function refresh() {
       const data = loadData();
-      document.getElementById('live').className = 'live ' + (data.live ? 'on' : 'off');
       document.getElementById('title').textContent = data.title;
       document.getElementById('subtitle').textContent = data.subtitle;
       document.title = data.title + ' — ' + data.subtitle;
