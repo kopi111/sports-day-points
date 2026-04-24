@@ -50,13 +50,11 @@
   <div id="teams" class="teams"></div>
 
   <nav class="bottom-nav">
-    <a href="admin-k7m2x9p3.html">⚙ Admin</a>
+    <a href="admin.html">⚙ Admin</a>
   </nav>
 
   <script src="storage.js"></script>
   <script>
-    requireAuth().then(ok => { if (ok) boot(); });
-
     let teams = [];
 
     function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
@@ -64,7 +62,7 @@
     function render() {
       const container = document.getElementById('teams');
       if (!teams.length) {
-        container.innerHTML = '<div class="empty">No teams yet. Go to <a href="admin-k7m2x9p3.html" style="color:#8bb8ff;">Admin</a> to add some.</div>';
+        container.innerHTML = '<div class="empty">No teams yet. Go to <a href="admin.html" style="color:#8bb8ff;">Admin</a> to add some.</div>';
         return;
       }
       container.innerHTML = teams.map((t, i) => `
@@ -126,11 +124,9 @@
       render();
     }
 
-    function boot() {
-      load();
-      window.addEventListener('storage', load);
-      setInterval(load, 2000);
-    }
+    load();
+    window.addEventListener('storage', load);
+    setInterval(load, 2000);
   </script>
 </body>
 </html>
