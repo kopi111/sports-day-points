@@ -65,6 +65,10 @@
           <input type="text" id="subtitle" />
         </label>
       </div>
+      <label style="display:block;margin-top:14px;">
+        <div style="font-weight:600;margin-bottom:6px;">Motto</div>
+        <input type="text" id="motto" />
+      </label>
       <label style="display:block;margin-top:14px;font-weight:600;">
         <input type="checkbox" id="live" style="margin-right:8px;" /> Live indicator ON
       </label>
@@ -140,6 +144,7 @@
         ...prev,
         title: document.getElementById('title').value,
         subtitle: document.getElementById('subtitle').value,
+        motto: document.getElementById('motto').value,
         live: document.getElementById('live').checked,
         teams: teams
       };
@@ -177,6 +182,7 @@
       const data = loadData();
       document.getElementById('title').value = data.title;
       document.getElementById('subtitle').value = data.subtitle;
+      document.getElementById('motto').value = data.motto || '';
       document.getElementById('live').checked = !!data.live;
       teams = structuredClone(data.teams);
       render();

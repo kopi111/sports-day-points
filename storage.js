@@ -15,6 +15,7 @@ const dataRef = db.ref('scoreboard');
 const DEFAULT_DATA = {
   title: 'Area 7',
   subtitle: 'Sport Day',
+  motto: 'THE ULTIMATE SHOWDOWN',
   live: false,
   teams: [
     { name: 'FDLP TITANS', score: '146', color: '#c8102e' },

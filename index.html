@@ -42,7 +42,7 @@
     <span class="trophy">🏆</span>
     <h1 class="title" id="title"></h1>
     <h2 class="subtitle" id="subtitle"></h2>
-    <div class="motto">THE ULTIMATE SHOWDOWN</div>
+    <div class="motto" id="motto"></div>
   </header>
   <main id="board"></main>
 
@@ -91,6 +91,7 @@
       const data = loadData();
       document.getElementById('title').textContent = data.title;
       document.getElementById('subtitle').textContent = data.subtitle;
+      document.getElementById('motto').textContent = data.motto || '';
       document.title = data.title + ' — ' + data.subtitle;
       layout(data.teams.length);
       const ranked = rankTeams(data.teams);
