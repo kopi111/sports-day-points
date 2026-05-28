@@ -17,8 +17,10 @@
     .live-badge.on { display: inline-flex; }
     .live-badge .dot { width: 11px; height: 11px; border-radius: 50%; background: #ff2b4d; box-shadow: 0 0 10px #ff2b4d; animation: livepulse 1.3s ease-in-out infinite; }
     @keyframes livepulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.7); } }
+    .header-credit { position: absolute; top: 88px; right: 36px; color: #ffc72c; font-size: 12px; font-weight: 700; letter-spacing: 1px; opacity: 0.85; text-shadow: 1px 1px 0 #0a1530; }
 
-    main { display: grid; gap: 16px; padding: 24px; height: calc(100vh - 200px); box-sizing: border-box; }
+    main { position: relative; display: grid; gap: 16px; padding: 24px; height: calc(100vh - 248px); box-sizing: border-box; }
+    .loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #0d1e4c; font: 700 28px 'Segoe UI', sans-serif; letter-spacing: 3px; opacity: 0.5; }
     .card { position: relative; container-type: size; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2); min-height: 0; min-width: 0; overflow: hidden; border: 2px solid rgba(255,255,255,0.15); background: linear-gradient(180deg, var(--team-color) 0%, color-mix(in srgb, var(--team-color), black 55%) 100%); will-change: transform; }
     .card::after { content: ''; position: absolute; top: -40%; left: -40%; width: 180%; height: 180%; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 50%); pointer-events: none; }
     .card.enter { animation: cardIn .5s ease-out; }
@@ -53,6 +55,13 @@
       transition: top .55s cubic-bezier(.2,1.5,.4,1);
     }
     #lead-banner.show { top: 0; }
+
+    .ticker { position: fixed; bottom: 0; left: 0; right: 0; height: 44px; z-index: 40; overflow: hidden; display: flex; align-items: center; background: linear-gradient(180deg, #0d1e4c 0%, #152a6a 100%); border-top: 3px solid #ffc72c; box-shadow: 0 -4px 16px rgba(0,0,0,0.45); }
+    .ticker-track { display: inline-block; white-space: nowrap; will-change: transform; animation: ticker 420s linear infinite; }
+    .ticker-track .q { color: #ffc72c; font: 700 19px 'Georgia', serif; letter-spacing: 1px; text-shadow: 1px 1px 0 #0a1530; }
+    .ticker-track .sep { color: #c8102e; padding: 0 26px; font-size: 18px; }
+    .ticker:hover .ticker-track { animation-play-state: paused; }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   </style>
 </head>
 <body>
@@ -74,17 +83,127 @@
     </svg>
     <span class="trophy">🏆</span>
     <div class="live-badge" id="live"><span class="dot"></span>LIVE</div>
+    <div class="header-credit">Created by Sgt Dwayne Aitken</div>
     <h1 class="title" id="title"></h1>
     <h2 class="subtitle" id="subtitle"></h2>
     <div class="motto" id="motto"></div>
   </header>
   <main id="board"></main>
+  <footer class="ticker"><div class="ticker-track" id="ticker"></div></footer>
 
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
   <script src="storage.js"></script>
   <script>
+    // Motivational quotes that scroll along the bottom ticker.
+    const QUOTES = [
+      "You miss 100% of the shots you don't take. — Wayne Gretzky",
+      "It's not whether you get knocked down; it's whether you get up. — Vince Lombardi",
+      "Hard work beats talent when talent doesn't work hard. — Tim Notke",
+      "It's hard to beat a person who never gives up. — Babe Ruth",
+      "Individual commitment to a group effort — that's what makes a team work. — Vince Lombardi",
+      "The strength of the team is each member; the strength of each member is the team. — Phil Jackson",
+      "If you can't outplay them, outwork them. — Ben Hogan",
+      "Make each day your masterpiece. — John Wooden",
+      "Winning takes talent; to repeat takes character. — John Wooden",
+      "Champions keep playing until they get it right. — Billie Jean King",
+      "Pressure is a privilege. — Billie Jean King",
+      "The more difficult the victory, the greater the happiness in winning. — Pelé",
+      "Talent wins games, but teamwork wins championships. — Michael Jordan",
+      "I've failed over and over again in my life, and that is why I succeed. — Michael Jordan",
+      "Some people want it to happen, some wish it would happen, others make it happen. — Michael Jordan",
+      "Champions are made from something they have deep inside them: a desire, a dream, a vision. — Muhammad Ali",
+      "Don't count the days; make the days count. — Muhammad Ali",
+      "Suffer now and live the rest of your life as a champion. — Muhammad Ali",
+      "Float like a butterfly, sting like a bee. — Muhammad Ali",
+      "You're never a loser until you quit trying. — Mike Ditka",
+      "Set your goals high, and don't stop till you get there. — Bo Jackson",
+      "The will to win means nothing without the will to prepare. — Juma Ikangaa",
+      "Today I will do what others won't, so tomorrow I can do what others can't. — Jerry Rice",
+      "Gold medals are made of sweat, determination, and a hard-to-find alloy called guts. — Dan Gable",
+      "Run when you can, walk if you have to, crawl if you must; just never give up. — Dean Karnazes",
+      "A champion is someone who gets up when they can't. — Jack Dempsey",
+      "Persistence can change failure into extraordinary achievement. — Matt Biondi",
+      "If you fail to prepare, you are preparing to fail. — Benjamin Franklin",
+      "It ain't over till it's over. — Yogi Berra",
+      "Never let the fear of striking out keep you from playing the game. — Babe Ruth",
+      "Once you learn to quit, it becomes a habit. — Vince Lombardi",
+      "Winning isn't everything, but wanting to win is. — Vince Lombardi",
+      "The harder you work, the harder it is to surrender. — Vince Lombardi",
+      "There's no excuse for anyone to work harder than you. — Derek Jeter",
+      "It's the will to prepare to win that matters. — Paul Bryant",
+      "Don't give up. Don't ever give up. — Jim Valvano",
+      "The more you dream, the farther you get. — Michael Phelps",
+      "It's not whether you win or lose, but how you play the game. — Grantland Rice",
+      "Concentration and mental toughness are the margins of victory. — Bill Russell",
+      "The vision of a champion is bent over, drenched in sweat, when no one is watching. — Mia Hamm",
+      "Wins and losses come a dime a dozen. But effort? Nobody can judge effort. — Marshawn Lynch",
+      "If you train hard, you'll not only be hard, you'll be hard to beat. — Herschel Walker",
+      "Make sure your worst enemy doesn't live between your own two ears. — Laird Hamilton",
+      "Find your limits, then have the courage to blow past them. — Picabo Street",
+      "Continuous effort is the key to unlocking our potential. — Winston Churchill",
+      "The difference between the impossible and the possible lies in determination. — Tommy Lasorda",
+      "Don't give an inch until the final buzzer sounds. — Larry Bird",
+      "You were meant to be here. This moment is yours. — Herb Brooks",
+      "Age is no barrier. It's a limitation you put on your mind. — Jackie Joyner-Kersee",
+      "Run far enough to find your second wind. — William James",
+      "Champions behave like champions before they are champions. — Bill Walsh",
+      "If you don't have confidence, you'll always find a way not to win. — Carl Lewis",
+      "Talent without hard work is a tragedy. — Robert Half",
+      'The harder the battle, the sweeter the victory.',
+      'Pain is temporary. Pride is forever.',
+      'Leave it all on the field.',
+      'Teamwork makes the dream work.',
+      'Play hard. Play fair. Play together.',
+      'Effort beats excuses.',
+      'Believe you can and you are halfway there.',
+      'Discipline is doing what must be done, even when you do not want to.',
+      'Heart over height. Hustle over hype.',
+      'Every champion was once a contender who refused to give up.',
+      'Be the hardest worker in the room.',
+      'Good, better, best — never let it rest, till your good is better and your better is best.',
+      'Fall seven times, stand up eight.',
+      'Winners train, losers complain.',
+      'Dream big. Work hard. Stay humble.',
+      'Sweat now, shine later.',
+      'Pressure makes diamonds.',
+      'Go hard or go home.',
+      'Greatness is earned, never given.',
+      'Train insane or remain the same.',
+      'Champions do extra.',
+      'Strength grows where comfort ends.',
+      'The grind never lies.',
+      'Win the moment, win the day.',
+      "Excuses don't win medals.",
+      'Stay hungry. Stay humble.',
+      'Compete, don\'t compare.',
+      'Leave no doubt.',
+      'Together we rise.',
+      'Stronger together.',
+      'Give your best, beat the rest.',
+      'Pride. Passion. Performance.',
+      'No guts, no glory.',
+      'Rise and grind.',
+      'Make them remember your name.',
+      'Outwork. Outlast. Out-believe.',
+      'The scoreboard rewards the relentless.',
+      'Heart beats talent.',
+      'Earn your stripes.',
+      'One more rep. One more push. One more win.',
+      'Champions are built, not born.',
+      'Chase the win, not the applause.',
+      'Believe. Compete. Achieve.',
+      'One team. One dream. One JCF.',
+      'Serve · Protect · Reassure',
+      'Created by Sgt Dwayne Aitken'
+    ];
+    (function buildTicker() {
+      const track = document.getElementById('ticker');
+      const half = QUOTES.map(q => `<span class="q">${q}</span><span class="sep">★</span>`).join('');
+      track.innerHTML = half + half;   // duplicated so the loop is seamless
+    })();
+
     const board = document.getElementById('board');
     const cardEls = new Map();   // team name -> card element
     const shown = new Map();     // team name -> currently displayed numeric score
@@ -131,7 +250,7 @@
       const el = document.createElement('div');
       el.className = 'card enter';
       el.dataset.name = item.name;
-      el.innerHTML = '<span class="crown">👑</span><span class="medal"></span><div class="name"></div><div class="score"></div>';
+      el.innerHTML = '<span class="crown"></span><span class="medal"></span><div class="name"></div><div class="score"></div>';
       el.addEventListener('animationend', e => { if (e.animationName === 'cardIn') el.classList.remove('enter'); });
       return el;
     }
@@ -142,6 +261,7 @@
       el.classList.remove('rank-1', 'rank-2', 'rank-3', 'is-leader');
       if (item.rank && item.rank <= 3) el.classList.add('rank-' + item.rank);
       if (item.rank === 1) el.classList.add('is-leader');
+      el.querySelector('.crown').textContent = item.rank === 1 ? '👑' : '';
       el.querySelector('.name').textContent = item.name;
       el.querySelector('.medal').textContent =
         item.rank === 1 ? '🥇' : item.rank === 2 ? '🥈' : item.rank === 3 ? '🥉' : '';
@@ -166,6 +286,9 @@
       document.getElementById('live').classList.toggle('on', !!data.live);
       document.title = data.title + ' — ' + data.subtitle;
       layout(data.teams.length);
+
+      const loadingEl = board.querySelector('.loading');
+      if (loadingEl) loadingEl.remove();
 
       const ranked = rankTeams(data.teams);
       const items = data.teams
@@ -267,8 +390,11 @@
     ['click', 'keydown', 'touchstart'].forEach(ev =>
       window.addEventListener(ev, () => { try { audioCtx().resume(); } catch (e) {} }, { once: true }));
 
+    // Wait for the first real Firebase snapshot before painting, so the
+    // built-in placeholder teams never flash on page load / refresh.
+    board.innerHTML = '<div class="loading">Loading scores…</div>';
     window.addEventListener('datachanged', refresh);
-    refresh();
+    if (typeof hasInitialSnapshot !== 'undefined' && hasInitialSnapshot) refresh();
   </script>
 </body>
 </html>
