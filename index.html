@@ -12,18 +12,51 @@
     .motto { font-size: 14px; color: #ffc72c; letter-spacing: 6px; margin-top: 6px; font-weight: 600; opacity: 0.85; }
     .crest { position: absolute; top: 18px; left: 30px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6)); }
     .trophy { position: absolute; top: 24px; right: 160px; font-size: 46px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+
+    .live-badge { position: absolute; top: 26px; right: 36px; display: none; align-items: center; gap: 8px; background: rgba(200,16,46,0.18); border: 1.5px solid #c8102e; color: #fff; font-weight: 800; font-size: 16px; letter-spacing: 2px; padding: 7px 14px; border-radius: 999px; }
+    .live-badge.on { display: inline-flex; }
+    .live-badge .dot { width: 11px; height: 11px; border-radius: 50%; background: #ff2b4d; box-shadow: 0 0 10px #ff2b4d; animation: livepulse 1.3s ease-in-out infinite; }
+    @keyframes livepulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.7); } }
+
     main { display: grid; gap: 16px; padding: 24px; height: calc(100vh - 200px); box-sizing: border-box; }
-    .card { position: relative; container-type: size; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2); min-height: 0; min-width: 0; overflow: hidden; border: 2px solid rgba(255,255,255,0.15); background: linear-gradient(180deg, var(--team-color) 0%, color-mix(in srgb, var(--team-color), black 55%) 100%); }
+    .card { position: relative; container-type: size; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2); min-height: 0; min-width: 0; overflow: hidden; border: 2px solid rgba(255,255,255,0.15); background: linear-gradient(180deg, var(--team-color) 0%, color-mix(in srgb, var(--team-color), black 55%) 100%); will-change: transform; }
     .card::after { content: ''; position: absolute; top: -40%; left: -40%; width: 180%; height: 180%; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 50%); pointer-events: none; }
+    .card.enter { animation: cardIn .5s ease-out; }
+    @keyframes cardIn { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: scale(1); } }
     .card .name { position: relative; font-size: clamp(16px, 12cqh, 48px); font-weight: bold; margin-bottom: 6cqh; letter-spacing: 2px; text-align: center; line-height: 1.1; color: var(--text-color); text-shadow: 2px 2px 4px rgba(0,0,0,0.4); }
     .card .score { position: relative; font-family: 'Stencil', 'Impact', sans-serif; font-size: clamp(40px, 50cqh, 220px); color: var(--text-color); line-height: 1; text-shadow: 4px 4px 8px rgba(0,0,0,0.5); }
     .medal { position: absolute; top: 8px; left: 12px; font-size: clamp(24px, 18cqh, 60px); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); z-index: 2; }
+    .medal:empty { display: none; }
+
+    .crown { position: absolute; top: 6px; left: 50%; transform: translateX(-50%); font-size: clamp(22px, 16cqh, 56px); filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5)); opacity: 0; pointer-events: none; z-index: 3; }
+    .card.is-leader .crown { opacity: 1; animation: bob 1.8s ease-in-out infinite; }
+    @keyframes bob { 0%,100% { transform: translateX(-50%) translateY(0) rotate(-4deg); } 50% { transform: translateX(-50%) translateY(-8px) rotate(4deg); } }
+
     .rank-1 { border-color: #FFD700; box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 40px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2); }
     .rank-2 { border-color: #C0C0C0; box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 30px rgba(192,192,192,0.3); }
     .rank-3 { border-color: #CD7F32; box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 30px rgba(205,127,50,0.3); }
+
+    .card.celebrate { animation: pop 1.5s cubic-bezier(.2,1.4,.3,1); z-index: 5; }
+    @keyframes pop {
+      0%   { transform: scale(1); box-shadow: 0 8px 30px rgba(0,0,0,.5), 0 0 0 rgba(255,215,0,0); }
+      15%  { transform: scale(1.07); box-shadow: 0 8px 30px rgba(0,0,0,.5), 0 0 70px 14px rgba(255,215,0,.85); }
+      60%  { transform: scale(1.02); box-shadow: 0 8px 30px rgba(0,0,0,.5), 0 0 50px 6px rgba(255,215,0,.6); }
+      100% { transform: scale(1); box-shadow: 0 8px 30px rgba(0,0,0,.5), 0 0 40px rgba(255,215,0,.4); }
+    }
+
+    #lead-banner {
+      position: fixed; top: -160px; left: 0; right: 0; z-index: 60;
+      background: linear-gradient(90deg, #c8102e, #ffc72c 35%, #ffe39a 50%, #ffc72c 65%, #009b3a);
+      color: #0d1e4c; font: 900 clamp(22px, 4vw, 44px)/1.1 'Georgia', serif; letter-spacing: 2px;
+      text-align: center; padding: 22px 16px; box-shadow: 0 10px 40px rgba(0,0,0,.6);
+      text-shadow: 0 1px 0 rgba(255,255,255,.4);
+      transition: top .55s cubic-bezier(.2,1.5,.4,1);
+    }
+    #lead-banner.show { top: 0; }
   </style>
 </head>
 <body>
+  <div id="lead-banner"></div>
   <header>
     <svg class="crest" width="80" height="90" viewBox="0 0 80 90">
       <defs>
@@ -40,16 +73,24 @@
       <text x="40" y="76" text-anchor="middle" fill="white" font-family="Georgia, serif" font-size="7" letter-spacing="0.5">REASSURE</text>
     </svg>
     <span class="trophy">🏆</span>
+    <div class="live-badge" id="live"><span class="dot"></span>LIVE</div>
     <h1 class="title" id="title"></h1>
     <h2 class="subtitle" id="subtitle"></h2>
     <div class="motto" id="motto"></div>
   </header>
   <main id="board"></main>
 
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
   <script src="storage.js"></script>
   <script>
+    const board = document.getElementById('board');
+    const cardEls = new Map();   // team name -> card element
+    const shown = new Map();     // team name -> currently displayed numeric score
+    let prevLeader = null;
+    let firstRender = true;
+
     function layout(n) {
       let cols;
       if (n <= 1) cols = 1;
@@ -58,7 +99,6 @@
       else if (n <= 16) cols = 4;
       else cols = 5;
       const rows = Math.ceil(n / cols);
-      const board = document.getElementById('board');
       board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
       board.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
     }
@@ -87,28 +127,145 @@
       return rankMap;
     }
 
+    function buildCard(item) {
+      const el = document.createElement('div');
+      el.className = 'card enter';
+      el.dataset.name = item.name;
+      el.innerHTML = '<span class="crown">👑</span><span class="medal"></span><div class="name"></div><div class="score"></div>';
+      el.addEventListener('animationend', e => { if (e.animationName === 'cardIn') el.classList.remove('enter'); });
+      return el;
+    }
+
+    function paintCard(el, item) {
+      el.style.setProperty('--team-color', item.color);
+      el.style.setProperty('--text-color', textColorFor(item.color));
+      el.classList.remove('rank-1', 'rank-2', 'rank-3', 'is-leader');
+      if (item.rank && item.rank <= 3) el.classList.add('rank-' + item.rank);
+      if (item.rank === 1) el.classList.add('is-leader');
+      el.querySelector('.name').textContent = item.name;
+      el.querySelector('.medal').textContent =
+        item.rank === 1 ? '🥇' : item.rank === 2 ? '🥈' : item.rank === 3 ? '🥉' : '';
+    }
+
+    function countUp(el, from, to, raw) {
+      const dur = 700, start = performance.now(), diff = to - from;
+      function tick(now) {
+        const p = Math.min(1, (now - start) / dur);
+        const eased = 1 - Math.pow(1 - p, 3);
+        if (p < 1) { el.textContent = Math.round(from + diff * eased); requestAnimationFrame(tick); }
+        else el.textContent = raw;
+      }
+      requestAnimationFrame(tick);
+    }
+
     function refresh() {
       const data = loadData();
       document.getElementById('title').textContent = data.title;
       document.getElementById('subtitle').textContent = data.subtitle;
       document.getElementById('motto').textContent = data.motto || '';
+      document.getElementById('live').classList.toggle('on', !!data.live);
       document.title = data.title + ' — ' + data.subtitle;
       layout(data.teams.length);
+
       const ranked = rankTeams(data.teams);
-      document.getElementById('board').innerHTML = data.teams.map((t, i) => {
-        const rank = ranked.get(i);
-        const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
-        const rankClass = rank && rank <= 3 ? ` rank-${rank}` : '';
-        const textColor = textColorFor(t.color);
-        return `
-          <div class="card${rankClass}" style="--team-color:${t.color};--text-color:${textColor}">
-            ${medal ? `<span class="medal">${medal}</span>` : ''}
-            <div class="name">${t.name}</div>
-            <div class="score">${t.score}</div>
-          </div>
-        `;
-      }).join('');
+      const items = data.teams
+        .map((t, i) => ({ name: t.name, color: t.color, raw: String(t.score),
+                          score: parseFloat(t.score) || 0, rank: ranked.get(i), i }))
+        .sort((a, b) => (b.score - a.score) || (a.i - b.i));
+
+      // FLIP step 1 — record current positions before any DOM change
+      const firstRects = new Map();
+      for (const el of board.children) firstRects.set(el.dataset.name, el.getBoundingClientRect());
+
+      // reconcile cards in the new ranked order
+      const seen = new Set();
+      for (const item of items) {
+        let el = cardEls.get(item.name);
+        if (!el) { el = buildCard(item); cardEls.set(item.name, el); }
+        paintCard(el, item);
+        board.appendChild(el);            // appending in order = reorder
+        seen.add(item.name);
+
+        const scoreEl = el.querySelector('.score');
+        const from = shown.has(item.name) ? shown.get(item.name) : item.score;
+        if (!firstRender && from !== item.score) countUp(scoreEl, from, item.score, item.raw);
+        else scoreEl.textContent = item.raw;
+        shown.set(item.name, item.score);
+      }
+      // drop removed teams
+      for (const [name, el] of cardEls) if (!seen.has(name)) { el.remove(); cardEls.delete(name); shown.delete(name); }
+
+      // FLIP step 2 — invert & play
+      requestAnimationFrame(() => {
+        for (const el of board.children) {
+          const first = firstRects.get(el.dataset.name);
+          if (!first) continue;
+          const last = el.getBoundingClientRect();
+          const dx = first.left - last.left, dy = first.top - last.top;
+          if (!dx && !dy) continue;
+          el.style.transition = 'none';
+          el.style.transform = `translate(${dx}px, ${dy}px)`;
+          requestAnimationFrame(() => {
+            el.style.transition = 'transform .6s cubic-bezier(.2,.9,.3,1)';
+            el.style.transform = '';
+          });
+        }
+      });
+
+      // lead-change celebration
+      const leader = (items[0] && items[0].rank === 1) ? items[0] : null;
+      if (leader && prevLeader && leader.name !== prevLeader && !firstRender) celebrate(leader);
+      if (leader) prevLeader = leader.name;
+      firstRender = false;
     }
+
+    function celebrate(leader) {
+      const banner = document.getElementById('lead-banner');
+      banner.textContent = `👑 ${leader.name} TAKE THE LEAD!`;
+      banner.classList.add('show');
+      setTimeout(() => banner.classList.remove('show'), 4500);
+
+      const el = cardEls.get(leader.name);
+      if (el) { el.classList.remove('celebrate'); void el.offsetWidth; el.classList.add('celebrate'); }
+
+      fireConfetti();
+      playHorn();
+    }
+
+    function fireConfetti() {
+      if (typeof confetti !== 'function') return;
+      const colors = ['#ffc72c', '#c8102e', '#009b3a', '#ffffff', '#2e51ff'];
+      confetti({ particleCount: 150, spread: 90, startVelocity: 55, origin: { x: .1, y: .55 }, colors });
+      confetti({ particleCount: 150, spread: 90, startVelocity: 55, origin: { x: .9, y: .55 }, colors });
+      const end = performance.now() + 1600;
+      (function rain() {
+        confetti({ particleCount: 5, startVelocity: 0, ticks: 200, gravity: 1.2, scalar: 1.1,
+                   origin: { x: Math.random(), y: -0.1 }, colors });
+        if (performance.now() < end) requestAnimationFrame(rain);
+      })();
+    }
+
+    let actx = null;
+    function audioCtx() { return actx || (actx = new (window.AudioContext || window.webkitAudioContext)()); }
+    function playHorn() {
+      try {
+        const ctx = audioCtx();
+        if (ctx.state === 'suspended') ctx.resume();
+        const now = ctx.currentTime;
+        [[311.13, 0], [415.30, 0.16]].forEach(([freq, t]) => {
+          const osc = ctx.createOscillator(), gain = ctx.createGain();
+          osc.type = 'sawtooth'; osc.frequency.value = freq;
+          osc.connect(gain); gain.connect(ctx.destination);
+          gain.gain.setValueAtTime(0.0001, now + t);
+          gain.gain.exponentialRampToValueAtTime(0.28, now + t + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + t + 0.55);
+          osc.start(now + t); osc.stop(now + t + 0.6);
+        });
+      } catch (e) { /* audio unsupported — celebration still fires visually */ }
+    }
+    // browsers block audio until a user gesture; unlock on the first interaction
+    ['click', 'keydown', 'touchstart'].forEach(ev =>
+      window.addEventListener(ev, () => { try { audioCtx().resume(); } catch (e) {} }, { once: true }));
 
     window.addEventListener('datachanged', refresh);
     refresh();
